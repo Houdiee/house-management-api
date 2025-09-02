@@ -9,7 +9,7 @@ public class User
 
     public required ICollection<HouseUser> HouseUsers { get; set; } = [];
 
-    public required ICollection<DutyInstance> AssignedDutyInstances { get; set; } = [];
+    public required ICollection<DutyInstance> DutyInstances { get; set; } = [];
 }
 
 public enum UserRole
