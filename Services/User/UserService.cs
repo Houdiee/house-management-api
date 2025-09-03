@@ -4,13 +4,12 @@ using EntityFramework.Exceptions.Common;
 using HouseManagementApi.Data;
 using HouseManagementApi.Dtos.User;
 using HouseManagementApi.Entities;
-using HouseManagementApi.Exceptions.User;
+using HouseManagementApi.Exceptions;
 using HouseManagementApi.Services.PasswordHasher;
 
-public class UserService(ApiDbContext context, ILogger logger, IPasswordHasher passwordHasher) : IUserService
+public class UserService(ApiDbContext context, IPasswordHasher passwordHasher) : IUserService
 {
   private readonly ApiDbContext _context = context;
-  private readonly ILogger _logger = logger;
   private readonly IPasswordHasher _passwordHasher = passwordHasher;
 
   public async Task<UserDto> CreateNewUserAsync(CreateUserRequest req)
@@ -30,12 +29,10 @@ public class UserService(ApiDbContext context, ILogger logger, IPasswordHasher p
     try
     {
       await _context.SaveChangesAsync();
-      _logger.LogInformation("Successfully created new user with ID: {UserId} and email: {Email}", newUser.Id, newUser.Email);
       return UserDto.FromEntity(newUser);
     }
     catch (UniqueConstraintException ex)
     {
-      _logger.LogWarning(ex, "Failed to create user. A user with the email {Email} already exists.", req.Email);
       throw new UserAlreadyExistsException($"User with {req.Email} already exists", ex);
     }
   }
@@ -48,7 +45,6 @@ public class UserService(ApiDbContext context, ILogger logger, IPasswordHasher p
     {
       throw new UserNotFoundException($"User with ID: {userId} not found");
     }
-    _logger.LogInformation("Successfully retrieved user with ID: {UserId}", user.Id);
     return UserDto.FromEntity(user);
   }
 
@@ -62,6 +58,5 @@ public class UserService(ApiDbContext context, ILogger logger, IPasswordHasher p
     }
     _context.Users.Remove(user);
     await _context.SaveChangesAsync();
-    _logger.LogInformation("Successfully deleted user with ID: {UserId}", user.Id);
   }
 }

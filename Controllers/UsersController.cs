@@ -3,23 +3,22 @@ namespace HouseManagementApi.Controllers;
 using HouseManagementApi.Data;
 using HouseManagementApi.Dtos.User;
 using HouseManagementApi.Entities;
-using HouseManagementApi.Exceptions.User;
+using HouseManagementApi.Exceptions;
 using HouseManagementApi.Services.User;
 using Microsoft.AspNetCore.Mvc;
 
+// TODO: add logging
+
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(ApiDbContext context, ILogger logger, IUserService userService) : ControllerBase
+public class UsersController(ApiDbContext context, IUserService userService) : ControllerBase
 {
     private readonly ApiDbContext _context = context;
-    private readonly ILogger _logger = logger;
     private readonly IUserService _userService = userService;
 
     [HttpPost]
     public async Task<IActionResult> CreateNewUser([FromBody] CreateUserRequest req)
     {
-        _logger.LogInformation("Attempting to create a new user with email: {Email}", req.Email);
-
         try
         {
             UserDto response = await _userService.CreateNewUserAsync(req);
@@ -31,7 +30,7 @@ public class UsersController(ApiDbContext context, ILogger logger, IUserService 
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unexpected error occurred while creating a user with email: {Email}", req.Email);
+            Console.WriteLine(ex);
             return StatusCode(500, new { message = "An unexpected error occurred" });
         }
     }
@@ -46,12 +45,11 @@ public class UsersController(ApiDbContext context, ILogger logger, IUserService 
         }
         catch (UserNotFoundException ex)
         {
-            _logger.LogWarning(ex, "User with ID: {UserId} not found", userId);
             return NotFound(new { message = ex.Message });
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unexpected error occurred while getting a user with ID: {UserID}", userId);
+            Console.WriteLine(ex);
             return StatusCode(500, new { message = "An unexpected error occurred" });
         }
     }
@@ -71,12 +69,11 @@ public class UsersController(ApiDbContext context, ILogger logger, IUserService 
         try
         {
             await _context.SaveChangesAsync();
-            _logger.LogInformation("Successfully deleted user with ID: {UserId}", user.Id);
             return Ok(response);
         }
         catch (Exception ex)
         {
-            _logger.LogError(ex, "An unexpected error occurred while deleting user with ID: {UserId}", user.Id);
+            Console.WriteLine(ex);
             return StatusCode(500, new { message = "An unexpected error occurred" });
         }
     }
