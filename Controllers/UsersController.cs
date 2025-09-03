@@ -1,48 +1,33 @@
 namespace HouseManagementApi.Controllers;
 
-using EntityFramework.Exceptions.Common;
 using HouseManagementApi.Data;
 using HouseManagementApi.Dtos.User;
 using HouseManagementApi.Entities;
-using HouseManagementApi.Services.PasswordHasher;
+using HouseManagementApi.Exceptions.User;
+using HouseManagementApi.Services.User;
 using Microsoft.AspNetCore.Mvc;
 
 [ApiController]
 [Route("api/[controller]")]
-public class UsersController(ApiDbContext context, ILogger logger, IPasswordHasher passwordHasher) : ControllerBase
+public class UsersController(ApiDbContext context, ILogger logger, IUserService userService) : ControllerBase
 {
     private readonly ApiDbContext _context = context;
-    private readonly IPasswordHasher _passwordHasher = passwordHasher;
     private readonly ILogger _logger = logger;
+    private readonly IUserService _userService = userService;
 
     [HttpPost]
     public async Task<IActionResult> CreateNewUser([FromBody] CreateUserRequest req)
     {
         _logger.LogInformation("Attempting to create a new user with email: {Email}", req.Email);
-        User newUser = new()
-        {
-            FirstName = req.FirstName,
-            LastName = req.LastName,
-            Email = req.Email,
-            HashedPassword = _passwordHasher.HashPassword(req.Password),
-            HouseUsers = [],
-            DutyInstances = [],
-        };
-
-        await _context.Users.AddAsync(newUser);
 
         try
         {
-            await _context.SaveChangesAsync();
-            _logger.LogInformation("Successfully created a new user with ID: {UserId} and email: {Email}", newUser.Id, newUser.Email);
-
-            var response = UserDto.FromEntity(newUser);
+            UserDto response = await _userService.CreateNewUserAsync(req);
             return Ok(response);
         }
-        catch (UniqueConstraintException ex)
+        catch (UserAlreadyExistsException ex)
         {
-            _logger.LogWarning(ex, "Failed to create user with email {Email}. A user with this email already exists", req.Email);
-            return Conflict(new { message = $"User with {req.Email} already exists" });
+            return Conflict(new { message = ex.Message });
         }
         catch (Exception ex)
         {
@@ -54,14 +39,21 @@ public class UsersController(ApiDbContext context, ILogger logger, IPasswordHash
     [HttpGet("{userId:int}")]
     public async Task<IActionResult> GetUserById(int userId)
     {
-        User? user = await _context.Users.FindAsync(userId);
-        if (user is null)
+        try
         {
-            return NotFound(new { message = $"User with ID {userId} not found" });
+            UserDto response = await _userService.GetUserByIdAsync(userId);
+            return Ok(response);
         }
-
-        var response = UserDto.FromEntity(user);
-        return Ok(response);
+        catch (UserNotFoundException ex)
+        {
+            _logger.LogWarning(ex, "User with ID: {UserId} not found", userId);
+            return NotFound(new { message = ex.Message });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An unexpected error occurred while getting a user with ID: {UserID}", userId);
+            return StatusCode(500, new { message = "An unexpected error occurred" });
+        }
     }
 
     [HttpDelete("{userId:int}")]

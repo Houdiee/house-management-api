@@ -1,5 +1,6 @@
 using HouseManagementApi.Data;
 using HouseManagementApi.Services.PasswordHasher;
+using HouseManagementApi.Services.User;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,6 +16,7 @@ builder.Services.AddDbContextPool<ApiDbContext>(options =>
 );
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 var app = builder.Build();
 
