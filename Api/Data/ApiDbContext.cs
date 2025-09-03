@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace HouseManagementApi.Data;
 
-public class ApiDbContext : DbContext
+public class ApiDbContext(DbContextOptions<ApiDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users { get; set; }
     public DbSet<House> Houses { get; set; }

@@ -1,4 +1,5 @@
 using HouseManagementApi.Data;
+using HouseManagementApi.Middleware;
 using HouseManagementApi.Services.PasswordHasher;
 using HouseManagementApi.Services.User;
 using Microsoft.EntityFrameworkCore;
@@ -18,11 +19,19 @@ builder.Services.AddDbContextPool<ApiDbContext>(options =>
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserService, UserService>();
 
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
+}
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/api/error");
+    app.UseHsts();
 }
 
 // app.UseHttpsRedirection();
