@@ -1,4 +1,5 @@
 using HouseManagementApi.Data;
+using HouseManagementApi.Services.PasswordHasher;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,8 @@ DotNetEnv.Env.Load();
 builder.Services.AddDbContextPool<ApiDbContext>(options =>
     options.UseNpgsql(Environment.GetEnvironmentVariable("DB_CONNECTION_STRING"))
 );
+
+builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 
 var app = builder.Build();
 

@@ -27,6 +27,10 @@ public class ApiDbContext : DbContext
             .HasForeignKey(hu => hu.UserId)
             .OnDelete(DeleteBehavior.Cascade);
 
+        modelBuilder.Entity<User>()
+            .HasIndex(u => u.Email)
+            .IsUnique();
+
         // Configure a composite primary key for the join table
         modelBuilder.Entity<HouseUser>()
             .HasKey(hu => new { hu.HouseId, hu.UserId });

@@ -11,4 +11,13 @@ public class HouseUser
     public House House { get; set; } = null!;
 
     public required UserRole Role { get; set; }
+
+    public required DateTime JoinedAt { get; set; }
 }
+
+public enum UserRole
+{
+    Member,
+    Admin,
+}
+
