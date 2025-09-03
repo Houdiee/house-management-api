@@ -40,22 +40,14 @@ public class UserService(ApiDbContext context, IPasswordHasher passwordHasher) :
 
   public async Task<UserDto> GetUserByIdAsync(int userId)
   {
-    User? user = await _context.Users.FindAsync(userId);
-    if (user is null)
-    {
-      throw new UserNotFoundException($"User with ID: {userId} not found");
-    }
+    User user = await FindUserAsync(userId);
     return UserDto.FromEntity(user);
   }
 
 
   public async Task<UserDto> UpdateUserAsync(int userId, UpdateUserRequest req)
   {
-    User? user = await _context.Users.FindAsync(userId);
-    if (user is null)
-    {
-      throw new UserNotFoundException($"User with ID: {userId} not found");
-    }
+    User user = await FindUserAsync(userId);
 
     if (req.FirstName is not null)
     {
@@ -90,12 +82,19 @@ public class UserService(ApiDbContext context, IPasswordHasher passwordHasher) :
 
   public async Task DeleteUserByIdAsync(int userId)
   {
+    User user = await FindUserAsync(userId);
+    _context.Users.Remove(user);
+    await _context.SaveChangesAsync();
+  }
+
+
+  private async Task<User> FindUserAsync(int userId)
+  {
     User? user = await _context.Users.FindAsync(userId);
     if (user is null)
     {
       throw new UserNotFoundException($"User with ID: {userId} not found");
     }
-    _context.Users.Remove(user);
-    await _context.SaveChangesAsync();
+    return user;
   }
 }
