@@ -49,6 +49,45 @@ public class UserService(ApiDbContext context, IPasswordHasher passwordHasher) :
   }
 
 
+  public async Task<UserDto> UpdateUserAsync(int userId, UpdateUserRequest req)
+  {
+    User? user = await _context.Users.FindAsync(userId);
+    if (user is null)
+    {
+      throw new UserNotFoundException($"User with ID: {userId} not found");
+    }
+
+    if (req.FirstName is not null)
+    {
+      user.FirstName = req.FirstName;
+    }
+    if (req.LastName is not null)
+    {
+      user.LastName = req.LastName;
+    }
+    if (req.Email is not null)
+    {
+      user.Email = req.Email;
+    }
+    if (req.Password is not null)
+    {
+      user.HashedPassword = _passwordHasher.HashPassword(req.Password);
+    }
+
+    _context.Users.Update(user);
+
+    try
+    {
+      await _context.SaveChangesAsync();
+      return UserDto.FromEntity(user);
+    }
+    catch (UniqueConstraintException ex)
+    {
+      throw new UserAlreadyExistsException($"User with {req.Email} already exists", ex);
+    }
+  }
+
+
   public async Task DeleteUserByIdAsync(int userId)
   {
     User? user = await _context.Users.FindAsync(userId);
