@@ -5,9 +5,9 @@ using HouseManagementApi.Services.User;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
 
-namespace Tests.Controllers;
+namespace Tests.Controllers.Users;
 
-public class UserControllerTests
+public class UserControllerCreateTests
 {
     [Fact]
     public async Task CreateNewUser_ReturnsStatusCreated_WithNewUserDto()
@@ -43,7 +43,7 @@ public class UserControllerTests
 
 
     [Fact]
-    public async Task CreateNewUser_WithExistingEmail_ThrowsUserAlreadyExistsException()
+    public async Task CreateNewUser_ThrowsUserAlreadyExistsException()
     {
         var mockUserService = new Mock<IUserService>();
         var usersController = new UsersController(mockUserService.Object);
@@ -64,39 +64,5 @@ public class UserControllerTests
             await usersController.CreateNewUser(request)
         );
     }
-
-
-    [Fact]
-    public async Task DeleteExistingUser_ReturnStatusOk()
-    {
-        var mockUserService = new Mock<IUserService>();
-        var usersController = new UsersController(mockUserService.Object);
-
-        int userId = 1;
-
-        mockUserService
-            .Setup(service => service.DeleteUserByIdAsync(userId))
-            .Returns(Task.CompletedTask);
-
-        IActionResult result = await usersController.DeleteUserById(userId);
-
-        Assert.IsType<OkObjectResult>(result);
-    }
-
-    [Fact]
-    public async Task DeleteNonExistingUser_ThrowsUserNotFound()
-    {
-        var mockUserService = new Mock<IUserService>();
-        var usersController = new UsersController(mockUserService.Object);
-
-        int userId = 1;
-
-        mockUserService
-            .Setup(service => service.DeleteUserByIdAsync(userId))
-            .ThrowsAsync(new UserNotFoundException());
-
-        await Assert.ThrowsAsync<UserNotFoundException>(async () =>
-            await usersController.DeleteUserById(userId)
-        );
-    }
 }
+

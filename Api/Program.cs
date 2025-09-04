@@ -4,6 +4,8 @@ using HouseManagementApi.Services.PasswordHasher;
 using HouseManagementApi.Services.User;
 using Microsoft.EntityFrameworkCore;
 
+// TODO: add logging
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
