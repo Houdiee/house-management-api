@@ -28,7 +28,8 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
-if (!app.Environment.IsDevelopment())
+// if (!app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment()) // delete this line and uncomment above later
 {
     app.UseExceptionHandler("/api/error");
     app.UseHsts();

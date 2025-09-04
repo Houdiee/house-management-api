@@ -16,7 +16,7 @@ public class UsersController(IUserService userService) : ControllerBase
     public async Task<IActionResult> CreateNewUser([FromBody] CreateUserRequest req)
     {
         UserDto newUserDto = await _userService.CreateNewUserAsync(req);
-        return Ok(newUserDto);
+        return Created($"/api/users/{newUserDto.Id}", newUserDto);
     }
 
     [HttpGet("{userId:int}")]
