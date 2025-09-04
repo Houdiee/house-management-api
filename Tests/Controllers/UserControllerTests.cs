@@ -10,7 +10,7 @@ namespace Tests.Controllers;
 public class UserControllerTests
 {
     [Fact]
-    public async Task CreateNewUser_ReturnsStatusCreated()
+    public async Task CreateNewUser_ReturnsStatusCreated_WithNewUserDto()
     {
         var mockUserService = new Mock<IUserService>();
         var usersController = new UsersController(mockUserService.Object);
@@ -62,6 +62,41 @@ public class UserControllerTests
 
         await Assert.ThrowsAsync<UserAlreadyExistsException>(async () =>
             await usersController.CreateNewUser(request)
+        );
+    }
+
+
+    [Fact]
+    public async Task DeleteExistingUser_ReturnStatusOk()
+    {
+        var mockUserService = new Mock<IUserService>();
+        var usersController = new UsersController(mockUserService.Object);
+
+        int userId = 1;
+
+        mockUserService
+            .Setup(service => service.DeleteUserByIdAsync(userId))
+            .Returns(Task.CompletedTask);
+
+        IActionResult result = await usersController.DeleteUserById(userId);
+
+        Assert.IsType<OkObjectResult>(result);
+    }
+
+    [Fact]
+    public async Task DeleteNonExistingUser_ThrowsUserNotFound()
+    {
+        var mockUserService = new Mock<IUserService>();
+        var usersController = new UsersController(mockUserService.Object);
+
+        int userId = 1;
+
+        mockUserService
+            .Setup(service => service.DeleteUserByIdAsync(userId))
+            .ThrowsAsync(new UserNotFoundException());
+
+        await Assert.ThrowsAsync<UserNotFoundException>(async () =>
+            await usersController.DeleteUserById(userId)
         );
     }
 }
