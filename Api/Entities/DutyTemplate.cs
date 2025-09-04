@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace HouseManagementApi.Entities;
 
 public class DutyTemplate
@@ -13,9 +15,11 @@ public class DutyTemplate
     public DateTime? EndDate { get; set; }
 
     public required int HouseId { get; set; }
+    [JsonIgnore]
     public House House { get; set; } = null!;
 
     public required int? AssignedUserId { get; set; } // can be null for rollover duties
+    [JsonIgnore]
     public User? AssignedUser { get; set; }
 
     public required ICollection<DutyInstance> DutyInstances { get; set; } = [];
