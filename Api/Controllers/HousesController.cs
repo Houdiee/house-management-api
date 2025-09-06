@@ -10,9 +10,14 @@ public class HousesController(IHouseService houseService) : ControllerBase
 {
     private readonly IHouseService _houseService = houseService;
 
+    // remove this later
     [HttpPost("{creatingUserId:int}")]
     public async Task<IActionResult> CreateNewHouse(int creatingUserId, [FromBody] CreateHouseRequest req)
     {
+        // Get the user ID from a secure, authenticated source
+        // For example, from a JWT claim:
+        // var creatingUserId = int.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+        // remove it from the URL route
         HouseDto newHouseDto = await _houseService.CreateNewHouseAsync(creatingUserId, req);
         return Ok(newHouseDto);
     }

@@ -4,8 +4,6 @@ using HouseManagementApi.Entities;
 
 public class HouseUserDto
 {
-  public required int Id { get; set; }
-
   public required int UserId { get; set; }
   public required int HouseId { get; set; }
 
@@ -16,7 +14,6 @@ public class HouseUserDto
   {
     return new HouseUserDto()
     {
-      Id = houseUser.Id,
       UserId = houseUser.UserId,
       HouseId = houseUser.HouseId,
       UserRole = houseUser.UserRole,

@@ -47,7 +47,6 @@ public class HouseService(ApiDbContext context) : IHouseService
     newHouse.HouseUsers.Add(new HouseUser()
     {
       HouseId = newHouse.Id,
-      House = newHouse,
       UserId = creatingUserId,
       UserRole = UserRole.Admin,
       JoinedAt = DateTime.UtcNow,

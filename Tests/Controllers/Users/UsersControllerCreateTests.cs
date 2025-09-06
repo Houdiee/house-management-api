@@ -1,11 +1,11 @@
+namespace Tests.Controllers.Users;
+
 using HouseManagementApi.Controllers;
 using HouseManagementApi.Dtos.User;
 using HouseManagementApi.Exceptions;
 using HouseManagementApi.Services.User;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
-
-namespace Tests.Controllers.Users;
 
 public class UserControllerCreateTests()
 {

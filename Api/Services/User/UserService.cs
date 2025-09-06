@@ -6,6 +6,7 @@ using HouseManagementApi.Dtos.User;
 using HouseManagementApi.Entities;
 using HouseManagementApi.Exceptions;
 using HouseManagementApi.Services.PasswordHasher;
+using Microsoft.EntityFrameworkCore;
 
 public class UserService(ApiDbContext context, IPasswordHasher passwordHasher) : IUserService
 {
@@ -14,6 +15,12 @@ public class UserService(ApiDbContext context, IPasswordHasher passwordHasher) :
 
   public async Task<UserDto> CreateNewUserAsync(CreateUserRequest req)
   {
+    User? existingUser = await _context.Users.FirstOrDefaultAsync(u => u.Email == req.Email);
+    if (existingUser is not null)
+    {
+      throw new UserAlreadyExistsException($"A user with the email address '{req.Email}' already exists.");
+    }
+
     User newUser = new()
     {
       FirstName = req.FirstName,
@@ -26,15 +33,8 @@ public class UserService(ApiDbContext context, IPasswordHasher passwordHasher) :
 
     await _context.Users.AddAsync(newUser);
 
-    try
-    {
-      await _context.SaveChangesAsync();
-      return UserDto.FromEntity(newUser);
-    }
-    catch (UniqueConstraintException ex)
-    {
-      throw new UserAlreadyExistsException($"User with {req.Email} already exists", ex);
-    }
+    await _context.SaveChangesAsync();
+    return UserDto.FromEntity(newUser);
   }
 
 

@@ -1,5 +1,6 @@
 using HouseManagementApi.Data;
 using HouseManagementApi.Middleware;
+using HouseManagementApi.Services.House;
 using HouseManagementApi.Services.PasswordHasher;
 using HouseManagementApi.Services.User;
 using Microsoft.EntityFrameworkCore;
@@ -20,6 +21,7 @@ builder.Services.AddDbContextPool<ApiDbContext>(options =>
 
 builder.Services.AddScoped<IPasswordHasher, PasswordHasher>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IHouseService, HouseService>();
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
