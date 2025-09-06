@@ -28,9 +28,9 @@ public class UsersControllerUpdateTests
         UserDto expectedUser = new()
         {
             Id = userId,
-            FirstName = "Anne",
-            LastName = "Smith",
-            Email = "updated@email.com",
+            FirstName = updateUserRequest.FirstName,
+            LastName = updateUserRequest.LastName,
+            Email = updateUserRequest.Email,
         };
 
         mockUserService
@@ -42,9 +42,7 @@ public class UsersControllerUpdateTests
         OkObjectResult okObjResult = Assert.IsType<OkObjectResult>(result);
         UserDto returnedUser = Assert.IsType<UserDto>(okObjResult.Value);
 
-        Assert.Equal(expectedUser.FirstName, returnedUser.FirstName);
-        Assert.Equal(expectedUser.LastName, returnedUser.LastName);
-        Assert.Equal(expectedUser.Email, returnedUser.Email);
+        Assert.Equivalent(expectedUser, returnedUser);
     }
 
     [Fact]

@@ -7,7 +7,7 @@ using Moq;
 
 namespace Tests.Controllers.Users;
 
-public class UserControllerCreateTests
+public class UserControllerCreateTests()
 {
     [Fact]
     public async Task CreateNewUser_ReturnsStatusCreated_WithNewUserDto()
@@ -38,7 +38,8 @@ public class UserControllerCreateTests
         IActionResult result = await usersController.CreateNewUser(request);
 
         var createdResult = Assert.IsType<CreatedResult>(result);
-        Assert.Equivalent(createdResult.Value, expectedResponse);
+        UserDto response = Assert.IsType<UserDto>(createdResult.Value);
+        Assert.Equivalent(expectedResponse, response);
     }
 
 

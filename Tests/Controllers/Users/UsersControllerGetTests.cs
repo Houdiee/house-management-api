@@ -15,7 +15,7 @@ public class UsersControllerGetTests
         var mockUserService = new Mock<IUserService>();
         var usersController = new UsersController(mockUserService.Object);
 
-        UserDto expectedUser = new()
+        UserDto expectedUserResponse = new()
         {
             Id = 1,
             FirstName = "John",
@@ -24,13 +24,15 @@ public class UsersControllerGetTests
         };
 
         mockUserService
-            .Setup(service => service.GetUserByIdAsync(expectedUser.Id))
-            .ReturnsAsync(expectedUser);
+            .Setup(service => service.GetUserByIdAsync(expectedUserResponse.Id))
+            .ReturnsAsync(expectedUserResponse);
 
-        IActionResult result = await usersController.GetUserById(expectedUser.Id);
+        IActionResult result = await usersController.GetUserById(expectedUserResponse.Id);
 
         var okObjResult = Assert.IsType<OkObjectResult>(result);
-        Assert.Equivalent(okObjResult.Value, expectedUser);
+        var response = Assert.IsType<UserDto>(okObjResult.Value);
+
+        Assert.Equivalent(expectedUserResponse, response);
     }
 
     [Fact]
