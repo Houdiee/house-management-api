@@ -10,7 +10,7 @@ public class HouseUser
     public required int HouseId { get; set; }
     public House House { get; set; } = null!;
 
-    public required UserRole Role { get; set; }
+    public required UserRole UserRole { get; set; }
 
     public required DateTime JoinedAt { get; set; }
 }

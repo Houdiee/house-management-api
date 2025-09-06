@@ -17,6 +17,9 @@ public class GlobalExceptionHandler : IExceptionHandler
             UserNotFoundException => (StatusCodes.Status404NotFound, "Not Found", exception.Message),
             UserAlreadyExistsException => (StatusCodes.Status409Conflict, "Conflict", exception.Message),
 
+            // House
+            HouseNotFoundException => (StatusCodes.Status404NotFound, "Not Found", exception.Message),
+
             _ => (StatusCodes.Status500InternalServerError, "Internal Server Error", "An unexpected problem occurred"),
         };
 

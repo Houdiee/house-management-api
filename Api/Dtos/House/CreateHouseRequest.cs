@@ -7,7 +7,7 @@ public class CreateHouseRequest
   public required string Nickname { get; set; }
   public required string StreetNo { get; set; }
   public required string StreetName { get; set; }
-  public required ICollection<int> UserIds = [];
+  public required HashSet<int> MemberUserIds = [];
 }
 
 public class CreateHouseRequestValidator : AbstractValidator<CreateHouseRequest>
@@ -29,9 +29,9 @@ public class CreateHouseRequestValidator : AbstractValidator<CreateHouseRequest>
       .NotEmpty()
       .MaximumLength(255);
 
-    RuleFor(house => house.UserIds)
+    RuleFor(house => house.MemberUserIds)
       .NotNull()
       .NotEmpty().WithMessage("Cannot create a house with no users")
-      .Must(list => list.Count <= 50).WithMessage("Cannot exceed over 50 users in a single house");
+      .Must(list => list.Count <= 25).WithMessage("Cannot exceed over 25 users in a single house");
   }
 }
