@@ -10,7 +10,7 @@ public class HouseService(ApiDbContext context) : IHouseService
 {
   private readonly ApiDbContext _context = context;
 
-  public async Task<HouseDto> CreateNewHouseAsync(CreateHouseRequest req, int creatingUserId)
+  public async Task<HouseDto> CreateNewHouseAsync(int creatingUserId, CreateHouseRequest req)
   {
     HashSet<int> memberUserIds = req.MemberUserIds;
 
